@@ -1,0 +1,10 @@
+Project smartsplit { database_type: 'PostgreSQL' }
+Table users { id uuid [pk]; name text; email text [unique]; password_hash text; role user_role }
+Table groups { id uuid [pk]; name text; currency char(3); created_by uuid [ref: > users.id] }
+Table group_members { group_id uuid [ref: > groups.id]; user_id uuid [ref: > users.id]; member_role text; indexes {(group_id,user_id) [pk]} }
+Table expenses { id uuid [pk]; group_id uuid [ref: > groups.id]; paid_by uuid [ref: > users.id]; title text; amount numeric(12,2); category_id smallint [ref: > categories.id]; expense_date date; split_type text; notes text; is_deleted boolean }
+Table expense_splits { expense_id uuid [ref: > expenses.id]; user_id uuid [ref: > users.id]; share_amount numeric(12,2); indexes {(expense_id,user_id) [pk]} }
+Table settlements { id uuid [pk]; group_id uuid [ref: > groups.id]; from_user uuid [ref: > users.id]; to_user uuid [ref: > users.id]; amount numeric(12,2) }
+Table categories { id smallint [pk]; name text [unique] }
+Table audit_log { id bigint [pk]; table_name text; operation text; row_id uuid; old_data jsonb; new_data jsonb; changed_at timestamptz }
+Table group_balances { group_id uuid [ref: > groups.id]; user_id uuid [ref: > users.id]; balance numeric(12,2); indexes {(group_id,user_id) [pk]} }

@@ -1,0 +1,3 @@
+import {NextRequest} from 'next/server';import {db} from '@/lib/db';import {apiRoute,json,requireAdmin,requireUser,uuidParam} from '@/lib/api';import {removeGroupGraph} from '@/lib/sync';import {transaction} from '@/lib/transaction';
+type Context={params:{groupId:string}};
+export const DELETE=apiRoute(async(req:NextRequest,ctx)=>{const user=await requireUser(req);requireAdmin(user);const groupId=uuidParam((ctx as Context|undefined)?.params.groupId,'groupId');await transaction(c=>c.query('DELETE FROM groups WHERE id=$1',[groupId]),user.id);const graphRemoved=await removeGroupGraph(groupId);return json({deleted:true,groupId,neo4jAvailable:graphRemoved})});

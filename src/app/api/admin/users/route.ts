@@ -1,0 +1,5 @@
+﻿import {NextRequest} from 'next/server';import {z} from 'zod';import {db} from '@/lib/db';import {apiRoute,json,requireAdmin,requireUser} from '@/lib/api';
+const pageSchema=z.object({page:z.coerce.number().int().min(1).default(1),pageSize:z.coerce.number().int().min(1).max(100).default(25),q:z.string().trim().max(100).optional()});
+export const GET=apiRoute(async(req:NextRequest)=>{const user=await requireUser(req);requireAdmin(user);const parsed=pageSchema.safeParse(Object.fromEntries(req.nextUrl.searchParams));if(!parsed.success)throw parsed.error;const{page,pageSize,q}=parsed.data,needle=q?`%${q}%`:null;const [rows,count]=await Promise.all([db.query(`SELECT id,name,email,role,is_active,created_at FROM users WHERE ($1::text IS NULL OR name ILIKE $1 OR email ILIKE $1) ORDER BY created_at DESC LIMIT $2 OFFSET $3`,[needle,pageSize,(page-1)*pageSize]),db.query('SELECT count(*)::int AS total FROM users WHERE ($1::text IS NULL OR name ILIKE $1 OR email ILIKE $1)',[needle])]);return json({users:rows.rows,pagination:{page,pageSize,total:count.rows[0].total}})});
+
+

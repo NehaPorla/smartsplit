@@ -1,0 +1,4 @@
+﻿import {createHash} from 'node:crypto';
+/** Deterministic local text vector for expense similarity; no external embedding service is required. */
+export function expenseEmbedding(text:string):number[]{const vector=Array.from({length:384},()=>0),words=text.toLowerCase().normalize('NFKC').match(/[a-z0-9]+/g)||[];const features=[...words,...words.slice(1).map((word,i)=>`${words[i]}_${word}`)];for(const word of words){const padded=`^${word}$`;for(let i=0;i<=padded.length-3;i++)features.push(padded.slice(i,i+3))}for(const feature of features){const digest=createHash('sha256').update(feature).digest();const index=digest.readUInt32LE(0)%vector.length,sign=digest[4]&1?1:-1;vector[index]+=sign*(feature.includes('_')?1.4:1)}const norm=Math.sqrt(vector.reduce((s,n)=>s+n*n,0))||1;return vector.map(n=>Number((n/norm).toFixed(6)))}
+export const pgVector=(values:number[])=>`[${values.join(',')}]`;

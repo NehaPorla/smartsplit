@@ -1,0 +1,4 @@
+﻿import{NextRequest,NextResponse}from'next/server';import{jwtVerify}from'jose';
+export async function middleware(req:NextRequest){const token=req.cookies.get('smartsplit_session')?.value;if(!token)return NextResponse.redirect(new URL('/login',req.url));try{const secret=process.env.JWT_SECRET;if(!secret)throw new Error('JWT_SECRET missing');const {payload}=await jwtVerify(token,new TextEncoder().encode(secret));if(req.nextUrl.pathname.startsWith('/admin')&&payload.role!=='admin')return new NextResponse('Forbidden',{status:403,headers:{'Content-Type':'text/plain; charset=utf-8'}});return NextResponse.next()}catch{return NextResponse.redirect(new URL('/login',req.url))}}
+export const config={matcher:['/','/dashboard/:path*','/groups/:path*','/analytics/:path*','/activity/:path*','/profile/:path*','/admin/:path*']};
+
