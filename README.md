@@ -80,4 +80,5 @@ Change demo passwords before exposing a seeded instance. Do not commit `.env.loc
 
 ## Database and documentation
 
-The schema, functions, triggers, views, indexes and optional vector schema are in `db/`. `npm.cmd run db:verify` checks the expected seeded dataset and key integrity conditions without resetting it. The admin SQL demo is at `/admin/sql-demo`. See `docs/PROJECT_REPORT.md`, `docs/requirements-checklist.md`, and `docs/SCREENSHOTS_TODO.md` for the report, evidence and remaining limitations. Guest members are not implemented; pgvector is disabled by default.
+The schema, functions, triggers, views, indexes and optional vector schema are in `db/`. `npm.cmd run db:verify` checks the expected seeded dataset and key integrity conditions without resetting it. The admin SQL demo is at `/admin/sql-demo`. See `docs/PROJECT_REPORT.md`, `docs/requirements-checklist.md`, and `docs/SCREENSHOTS_TODO.md` for the report, evidence and remaining limitations. Guest members are not 
+implemented; pgvector is disabled by default.
